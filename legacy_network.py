@@ -10,6 +10,7 @@ from mininet.log import setLogLevel, info
 from mininet.link import TCLink, Intf
 from mininet.term import makeTerm
 from subprocess import call
+from time import sleep
 
 def myNetwork():
 
@@ -78,6 +79,7 @@ def myNetwork():
     # using makeTerm API to start server program in Xterm terminal of host h4
     # and to start client program in xterm terminal of hosts h1 h2 h3
     makeTerm(h4, title='Host', term='xterm', display=None, cmd='python3 tpa4_chat_server.py; bash')
+    sleep(1)
     makeTerm(h1, title='Client 1', term='xterm', display=None, cmd='python3 tpa4_chat_client.py; bash')
     makeTerm(h2, title='Client 2', term='xterm', display=None, cmd='python3 tpa4_chat_client.py; bash')
     makeTerm(h3, title='Client 3', term='xterm', display=None, cmd='python3 tpa4_chat_client.py; bash')
