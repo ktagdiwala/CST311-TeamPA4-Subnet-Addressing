@@ -1,6 +1,6 @@
 #!env python
 
-"""Chat server for CST311 Programming Assignment 3"""
+"""Chat server for CST311 Programming Assignment 4"""
 __author__ = "[Stack Otterflow]"
 __credits__ = [
     "Krishna Tagdiwala",
@@ -100,7 +100,7 @@ def main():
     server_socket = s.socket(s.AF_INET, s.SOCK_STREAM)
 
     # Assign port number to socket, and bind to chosen port
-    server_socket.bind(('10.0.0.1', server_port))
+    server_socket.bind(('10.0.2.4', server_port))
 
     # Configure how many requests can be queued on the server at once
     server_socket.listen(1)
