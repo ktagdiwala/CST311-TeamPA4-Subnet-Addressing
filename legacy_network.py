@@ -11,7 +11,15 @@ from mininet.link import TCLink, Intf
 from mininet.term import makeTerm
 from subprocess import call
 from time import sleep
-
+"""Team Programming Assignment 4 (Subnet Addressing)
+__author__ = "[Stack Otterflow]"
+__credits__ = [
+    "Krishna Tagdiwala",
+    "Jorge Vazquez",
+    "Walid Elgammal",
+    "Jesus Martinez Miranda"
+]
+"""
 def myNetwork():
 
     net = Mininet( topo=None,
@@ -23,13 +31,13 @@ def myNetwork():
                       controller=Controller,
                       protocol='tcp',
                       port=6633)
-
+# Assigning IP addresses and default routes to routers
     info( '*** Add switches\n')
-    s1 = net.addSwitch('s1', cls=OVSKernelSwitch)
-    s2 = net.addSwitch('s2', cls=OVSKernelSwitch)
+    s1 = net.addSwitch('s1', cls=OVSKernelSwitch)                          # Open vSwitch L2 (no IP addresses assigned)
+    s2 = net.addSwitch('s2', cls=OVSKernelSwitch)                          # Open vSwitch L2 (no IP addresses assigned)
     r5 = net.addHost('r5', cls=Node, ip='10.0.2.1/24', defaultRoute='via 10.0.2.1')
     r5.cmd('sysctl -w net.ipv4.ip_forward=1')
-    r4 = net.addHost('r4', cls=Node, ip='192.168.50.2/30')
+    r4 = net.addHost('r4', cls=Node, ip='192.168.50.2/30')                  # Adjacent Router with Peer r3
     r4.cmd('sysctl -w net.ipv4.ip_forward=1')
     r3 = net.addHost('r3', cls=Node, ip='10.0.0.1/24', defaultRoute='via 10.0.0.1')
     r3.cmd('sysctl -w net.ipv4.ip_forward=1')
@@ -40,22 +48,23 @@ def myNetwork():
     h3 = net.addHost('h3', cls=Host, ip='10.0.2.3/24', defaultRoute='via 10.0.2.1')
     h4 = net.addHost('h4', cls=Host, ip='10.0.2.4/24', defaultRoute='via 10.0.2.1')
 
+# Link routers (r3, r4) and (r4, r5) in order
     info( '*** Add links\n')
     net.addLink(h1, s1)
     net.addLink(h2, s1)
     net.addLink(h3, s2)
     net.addLink(h4, s2)
-    net.addLink(s2, r5, intfName2='r5-eth0', params2={  'ip'  :  '10.0.2.1/24' } )   
-    net.addLink(s1, r3, intfName2='r3-eth0', params2={  'ip'  :  '10.0.0.1/24' } )   
+    net.addLink(s2, r5, intfName2='r5-eth0', params2={  'ip'  :  '10.0.2.1/24' } )   # Explicit router/switch link
+    net.addLink(s1, r3, intfName2='r3-eth0', params2={  'ip'  :  '10.0.0.1/24' } )   # Explicit router/switch link
     net.addLink(r3, r4, intfName1='r3-eth1', params1={  'ip'  : '192.168.50.1/30'},
                         intfName2='r4-eth0', params2={  'ip'  : '192.168.50.2/30'} )
-    net.addLink(r4, r5, intfName1='r4-eth1', params1={  'ip'  : '192.168.60.1/30'},
+    net.addLink(r4, r5, intfName1='r4-eth1', params1={  'ip'  : '192.168.60.1/30'},   # New network introduced
                         intfName2='r5-eth1', params2={  'ip'  : '192.168.60.2/30'} )
 
     info( '*** Starting network\n')
     net.build()
 
-    # 6 static routes - Need to map to each network by starting at a router inter
+    # 6 static routes - map to each network by forwarding network traffic to a specific destination.
     net['r5'].cmd('ip route add 10.0.0.0/24 via 192.168.60.1 dev r5-eth1')
     net['r3'].cmd('ip route add 192.168.60.0/30 via 192.168.50.2 dev r3-eth1')
 
