@@ -29,7 +29,7 @@ def myNetwork():
     s2 = net.addSwitch('s2', cls=OVSKernelSwitch)
     r5 = net.addHost('r5', cls=Node, ip='10.0.2.1/24', defaultRoute='via 10.0.2.1')
     r5.cmd('sysctl -w net.ipv4.ip_forward=1')
-    r4 = net.addHost('r4', cls=Node, ip='192.168.50.2/24')
+    r4 = net.addHost('r4', cls=Node, ip='192.168.50.2/30')
     r4.cmd('sysctl -w net.ipv4.ip_forward=1')
     r3 = net.addHost('r3', cls=Node, ip='10.0.0.1/24', defaultRoute='via 10.0.0.1')
     r3.cmd('sysctl -w net.ipv4.ip_forward=1')
