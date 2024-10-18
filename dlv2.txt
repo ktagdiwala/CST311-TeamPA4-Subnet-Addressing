@@ -1,0 +1,52 @@
+Programming Assignment 4 - Team1                                                                    
+CST 311, Introduction to Computer Networks 
+************************************************************
+************************************************************
+  The following is the list of the team 1 changes in the legacy_network.py.
+	1-The file name was changed from 'starter_code.py' to 'legacy_network.py' and saved.
+	2-The code was modified to fix the build error by moving the instantiating of S1 and S2 lines under the info('*** Add switches\n') section.
+	3-Since r3 router, host h1, and host h2 are all connected to the same switch, the assigned IPv4 network address is 10.0.0.0/24. Following the given rules of the assignment, a 254-host network is assigned to the interfaces as follows: -
+		a.The router r3-eth0 interface connected to the switch is configured with an IPv4 address and subnet mask for network 10.0.0.1/24.
+		b.No IP addresses are assigned to the S1 software-based OpenFlow switch interfaces. The line s1 = net.addSwitch('s1', cls=OVSKernelSwitch), indicates an L2 switch. 
+		c.The host h1 is assigned to IP address 10.0.0.3
+		d.The host h2 is assigned to IP address 10.0.0.4
+
+	4-Similarly, r5 router, host h3, and host h4 are all connected to the same switch, the assigned IPv4 network address is 10.0.2.0/24. Following the given rules of the assignment, a 254-host network is assigned to the interfaces as follows: -
+		a.The router r5-eth0 interface connected to the switch is configured with an IPv4 address and subnet mask for the network 10.0.2.1/24.
+		b.No IP addresses are assigned to the S2 software-based OpenFlow switch interfaces. The line s2 = net.addSwitch('s2', cls=OVSKernelSwitch), indicates an L2 switch. 
+		c.The host h3 is assigned to IP address 10.0.2.3
+		d.The host h4 is assigned to IP address 10.0.2.4
+
+	5-Now, let's assign an IPv4 address to one of the two interfaces of the selected r4. It is important to note that the chosen interface defined in this line of code will determine the routing path direction and remaining IP addresses for interfaces r3-eth1 and r5-eth1. In this particular 		order, we assign a network IP address 192.168.50.2/30 to interface r4-eth0, which is linked directly to the r3 router adjacent to interface r3-eth1. A CDIR /30 is enough for the usable IPs since no other hosts are connected between r3 and r4.
+	r4 = net.addHost('r4', cls=Node, ip='192.168.50.2/30')
+	Note: r4 routes are coded as static IP after adding links between all routers r3, r4, and r5. 
+
+	6-Under the section info('*** Add linksn'), the remaining router interfaces will be assigned based on the corresponding network.
+		a.No code modification is needed between switches and hosts. The Open vSwitch will forward Ethernet frames like a standard switch.
+		b.Linking routers to the switch is also optional, but we will explicitly assign an interface intfName with a node number between routers and switches. The intfName2='r5-eth0 is connected directly to the switch S2, while intfName2='r3-eth0 is connected directly to the S1. 		This helps keep things organized and ready for the static routes.
+		c.We will use net.addLink(r3, r4) to assign an IP address with subnet  192.168.50.1/30 to the other interface r3-eth1 on r3 and link to adjacent r4-eth0. 
+		d.Similarly, we modified net.addLink(r4, r5) and introduced a new network to both r4 and r5 in the order of the code line. This step will link the last two routers by assigning IP and subnet 192.168.60.1/30 to r4-eth1 and 192.168.60.2/30 to r5-eth1. 
+
+	7-It is expected that all hosts and routers reach each other. Therefore, we will need different subnets to communicate with each other. First, All host packets are forwarded to the only router interface.  A default route for each host is defined by adding the corresponding router 		interface. Second, we must tell each router to use a specific interface to reach the intended destination. For example, if we need r3 to reach the 10.0.2.0/24 network, we must add a route that goes to the adjacent interface of the r4 IP address, doing so via r3-eth1. We have 3 		routers. Therefore, we need 6 static routes to cover all IP destinations. 
+
+	# 6 static routes mapping to each network by forwarding network traffic to a specific destination.
+		net['r5'].cmd('ip route add 10.0.0.0/24 via 192.168.60.1 dev r5-eth1')
+		net['r3'].cmd('ip route add 192.168.60.0/30 via 192.168.50.2 dev r3-eth1')
+		net['r3'].cmd('ip route add 10.0.2.0/24 via 192.168.50.2 dev r3-eth1')
+		net['r4'].cmd('ip route add 10.0.0.0/24 via 192.168.50.1 dev r4-eth0')
+		net['r4'].cmd('ip route add 10.0.2.0/24 via 192.168.60.2 dev r4-eth1')
+		net['r5'].cmd('ip route add 192.168.50.0/30 via 192.168.60.1 dev r5-eth1')
+
+	8-In summary, by assigning the IP addresses to all hosts and routers interfaces, and defining the appropriate routes, all testing of ping reachability among all hosts and switches returns successful.
+
+	r3___________r4 _________r5
+ 	|			 |
+	|			 |
+       	 S1			 S2
+	/\			/\
+               /  \		               /  \	
+             /	   \		              /    \
+           /	    \		             /      \
+          h1        h2		           h3	     h4	
+
+************************************************************
