@@ -1,7 +1,6 @@
 import subprocess
 
 chat_server_name = input("Input common name of chat server: ")
-passphrase = "CST311" # Used when genereating the certs from the CSRs
 
 # Subject line for the questions that are asked after generating the CSRs
 subject = (
@@ -26,7 +25,8 @@ def genCSRs():
 # Function to generate the certs from the CSRs generated from genCSRs for the chat server
 def genCertFromCSRs():
     print("Generating Certificates from CSRs...")
-    subprocess.run(["sudo", "openssl", "x509", "-req", "-days", "365", "-in", f"{chat_server_name}.csr", "-CA", "cacert.pem", "-CAkey", "./private/cakey.pem", "-CAcreateserial", "-out", f"{chat_server_name}.pem", "-passin", f"pass:{passphrase}"], cwd="/etc/ssl/demoCA")
+    privatePass = input("Enter pass phrase for cakey.pem: ")
+    subprocess.run(["sudo", "openssl", "x509", "-req", "-days", "365", "-in", f"{chat_server_name}.csr", "-CA", "cacert.pem", "-CAkey", "./private/cakey.pem", "-CAcreateserial", "-out", f"{chat_server_name}.pem", "-passin", f"pass:{privatePass}"], cwd="/etc/ssl/demoCA")
 
 # Opening the file and writing the common name of the server
 with open("credentials.txt", "w") as file:
