@@ -13,6 +13,7 @@ from subprocess import call
 from time import sleep
 import subprocess
 
+# Runs certificate generation script
 subprocess.run(["sudo", "-E", "python3", "certificate_generation.py"])
 
 """Team Programming Assignment 4 (Subnet Addressing)

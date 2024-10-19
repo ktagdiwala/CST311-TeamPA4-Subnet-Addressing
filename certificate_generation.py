@@ -27,6 +27,9 @@ def genCertFromCSRs():
     print("Generating Certificates from CSRs...")
     privatePass = input("Enter pass phrase for cakey.pem: ")
     subprocess.run(["sudo", "openssl", "x509", "-req", "-days", "365", "-in", f"{chat_server_name}.csr", "-CA", "cacert.pem", "-CAkey", "./private/cakey.pem", "-CAcreateserial", "-out", f"{chat_server_name}.pem", "-passin", f"pass:{privatePass}"], cwd="/etc/ssl/demoCA")
+    
+    # Command to retrieve the generated certificate:
+    # sudo openssl x509 -text -noout -in /etc/ssl/demoCA/tpa4.chat.test.pem
 
 # Opening the file and writing the common name of the server
 with open("credentials.txt", "w") as file:
