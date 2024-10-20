@@ -11,6 +11,7 @@ __credits__ = [
 
 # Import statements
 import socket as s
+import ssl
 
 # Configure logging
 import logging
@@ -27,10 +28,16 @@ server_port = 12000
 def main():
     # Create socket
     client_socket = s.socket(s.AF_INET, s.SOCK_STREAM)
+    # Added these lines 
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
+    context.load_verify_locations("tpa4.chat.test.pem")
 
     try:
         # Establish TCP connection
-        client_socket.connect((server_name, server_port))
+        # client_socket.connect((server_name, server_port))
+        # Added these lines
+        secure_socket = context.wrap_socket(client_socket, server_hostname=server_name)
+        secure_socket.connect((server_name, server_port))
     except Exception as e:
         log.exception(e)
         log.error("***Advice:***")
