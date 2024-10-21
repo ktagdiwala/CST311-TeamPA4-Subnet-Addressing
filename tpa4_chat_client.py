@@ -51,8 +51,8 @@ def main():
 
     # Creates and starts threads for sending and receiving messages
     # So that both functions occur simeltaneously (in real-time)
-    sending_thread = threading.Thread(target=send_message, args=(client_socket,))
-    receiving_thread = threading.Thread(target=recieve_message, args=(client_socket,))
+    sending_thread = threading.Thread(target=send_message, args=(secure_socket,))
+    receiving_thread = threading.Thread(target=recieve_message, args=(secure_socket,))
     sending_thread.start()
     receiving_thread.start()
 
