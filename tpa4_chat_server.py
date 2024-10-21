@@ -108,7 +108,7 @@ def main():
     
     # Added these lines 
     context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-    context.load_cert_chain(certfile='tpa4.chat.test.pem', keyfile='tpa4.chat.test-key.pem')
+    context.load_cert_chain(certfile="/etc/ssl/demoCA/tpa4.chat.test.pem", keyfile="/etc/ssl/demoCA/tpa4.chat.test-key.pem")
 
     # Alert user we are now online
     log.info("The server is ready to receive on port " + str(server_port))
@@ -123,10 +123,10 @@ def main():
             log.info("Connected to client at " + str(address))
 
             # Keeps track of the connection sockets to relay messages between clients
-            users.append(connection_socket)
+            users.append(secure_socket)
 
             # Setting up multiple threads to accept connections
-            thread = threading.Thread(target=connection_handler, args=(connection_socket, address))
+            thread = threading.Thread(target=connection_handler, args=(secure_socket, address))
             thread.start()
 
     finally:

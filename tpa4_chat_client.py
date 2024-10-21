@@ -30,7 +30,7 @@ def main():
     client_socket = s.socket(s.AF_INET, s.SOCK_STREAM)
     # Added these lines 
     context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT)
-    context.load_verify_locations("tpa4.chat.test.pem")
+    context.load_verify_locations("/etc/ssl/demoCA/tpa4.chat.test.pem")
 
     try:
         # Establish TCP connection
@@ -52,30 +52,30 @@ def main():
     # Creates and starts threads for sending and receiving messages
     # So that both functions occur simeltaneously (in real-time)
     sending_thread = threading.Thread(target=send_message, args=(secure_socket,))
-    receiving_thread = threading.Thread(target=recieve_message, args=(secure_socket,))
+    receiving_thread = threading.Thread(target=receive_message, args=(secure_socket,))
     sending_thread.start()
     receiving_thread.start()
 
 # Allows the client to send messages to the other client through the server
-def send_message(client_socket):
+def send_message(secure_socket):
     message = ""
 
     # Checks to see if the message is "bye" to determine when the client wants to disconnect
     while message != "bye":
         message = input('')
-        client_socket.send(message.encode())
+        secure_socket.send(message.encode())
 
-    client_socket.close()
+    secure_socket.close()
 
 # Allows the client to receive messages from the other client through the server
-def recieve_message(client_socket):
+def receive_message(secure_socket):
 
     response = ""
 
     # Constantly checks to see if the server has relayed any messages
     while True:
         try:
-            response = client_socket.recv(1024)
+            response = secure_socket.recv(1024)
             response_decoded = response.decode()
             print(response_decoded)
         except:
