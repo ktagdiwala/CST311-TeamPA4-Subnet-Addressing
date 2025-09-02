@@ -11,6 +11,11 @@ from mininet.link import TCLink, Intf
 from mininet.term import makeTerm
 from subprocess import call
 from time import sleep
+import subprocess
+
+# Runs certificate generation script
+subprocess.run(["sudo", "-E", "python3", "certificate_generation.py"])
+
 """Team Programming Assignment 4 (Subnet Addressing)
 __author__ = "[Stack Otterflow]"
 __credits__ = [
@@ -21,7 +26,10 @@ __credits__ = [
 ]
 """
 def myNetwork():
-
+    # Used to start chat clients on hosts in an xterm window
+    def startClient(hostname, titleName):
+        makeTerm(hostname, title=titleName, term='xterm', display=None, cmd='python3 tpa4_chat_client.py; bash')
+    
     net = Mininet( topo=None,
                    build=False,
                    ipBase='10.0.0.0/24')
@@ -88,10 +96,10 @@ def myNetwork():
     # using makeTerm API to start server program in Xterm terminal of host h4
     # and to start client program in xterm terminal of hosts h1 h2 h3
     makeTerm(h4, title='Host', term='xterm', display=None, cmd='python3 tpa4_chat_server.py; bash')
-    sleep(1)
-    makeTerm(h1, title='Client 1', term='xterm', display=None, cmd='python3 tpa4_chat_client.py; bash')
-    makeTerm(h2, title='Client 2', term='xterm', display=None, cmd='python3 tpa4_chat_client.py; bash')
-    makeTerm(h3, title='Client 3', term='xterm', display=None, cmd='python3 tpa4_chat_client.py; bash')
+    sleep(4)
+    startClient(h1, "Client 1")
+    startClient(h2, "Client 2")
+    startClient(h3, "Client 3")
 
     CLI(net)
     net.stop()

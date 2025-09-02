@@ -11,6 +11,7 @@ __credits__ = [
 
 import socket as s
 import threading
+import ssl
 
 # Configure logging
 import logging
@@ -104,6 +105,10 @@ def main():
 
     # Configure how many requests can be queued on the server at once
     server_socket.listen(1)
+    
+    # Added these lines 
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    context.load_cert_chain(certfile="/etc/ssl/demoCA/tpa4.chat.test.pem", keyfile="/etc/ssl/demoCA/tpa4.chat.test-key.pem")
 
     # Alert user we are now online
     log.info("The server is ready to receive on port " + str(server_port))
@@ -114,13 +119,14 @@ def main():
         while True:
             # When a client connects, create a new socket and record their address
             connection_socket, address = server_socket.accept()
+            secure_socket = context.wrap_socket(connection_socket, server_side=True)
             log.info("Connected to client at " + str(address))
 
             # Keeps track of the connection sockets to relay messages between clients
-            users.append(connection_socket)
+            users.append(secure_socket)
 
             # Setting up multiple threads to accept connections
-            thread = threading.Thread(target=connection_handler, args=(connection_socket, address))
+            thread = threading.Thread(target=connection_handler, args=(secure_socket, address))
             thread.start()
 
     finally:
